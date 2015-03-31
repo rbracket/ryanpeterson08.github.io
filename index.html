@@ -1,0 +1,55 @@
+<!--portland_mistmach script
+based off of portland mistmatch script by Michael Arnold-->
+<html>
+<head>
+	
+	<title>Portland Name Mismatch</title>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<link rel="lines" type="application/geojson" href="./portland_name_mismatches.geojson"/>
+
+</head>
+
+<body>
+
+	<div id="map" style="height: 100%"></div>
+
+	<script>
+
+		var map = L.map('map').setView([44.921892, -123.321959], 9);
+
+		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 25,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'examples.map-i875mjb7',
+		}).addTo(map);
+
+		$.getJSON($('link[rel="lines"]').attr("href"), function(data) {
+    	  
+			var portlandRoads = data
+			nameMismatches = L.geoJson(portlandRoads,{onEachFeature:
+				onEachFeature});
+
+			nameMismatches.addTo(map);
+
+    	});
+
+    	function onEachFeature(feature, layer){
+
+    		var city = 'city: ' + feature.properties.city;
+    		var osm = 'osm:' + feature.properties.osm;
+    		var wayId = feature.properties.wayId;
+    		var wayLink = "http://www.openstreetmap.org/way/" + wayId;
+    		var toOSM = 'way: <a ' + 'href="' + wayLink + '">' + wayId + '</a>';
+    		var fullText = city + "<br>" + osm + "<br>" + toOSM;
+    		layer.bindPopup(fullText);
+    	}
+
+	</script>
+
+
+</body>
+</html>
